@@ -1,68 +1,68 @@
 # Quadro API Example (.NET 8)
 
-Dit project is een klein .NET 8 consolevoorbeeld voor het benaderen van de Quadro API met **OAuth 2.0 Authorization Code + PKCE (SHA-256)**.
+**Language:** **English** | [Nederlands](README.nl.md)
 
-De applicatie opent de standaardbrowser voor de login, ontvangt de OAuth-callback lokaal, haalt een access token op en voert daarna de geconfigureerde API-request uit.
+This project is a small .NET 8 console example for accessing the Quadro API using **OAuth 2.0 Authorization Code + PKCE (SHA-256)**.
 
-## Snel starten
+The application opens the default browser for authentication, receives the OAuth callback locally, obtains an access token, and then performs the configured API request.
 
-### 1. Vereisten
+## Quick start
 
-Zorg dat het volgende is geïnstalleerd:
+### 1. Requirements
+
+Make sure the following are installed or available:
 
 - .NET 8 SDK
-- een browser
-- toegang tot de juiste OAuth- en API-instellingen
+- a web browser
+- access to the required OAuth and API settings
 
-Controleer eventueel je .NET-installatie met:
+You can verify your .NET installation with:
 
 ```powershell
 dotnet --version
 ```
 
-### 2. Maak `appsettings.json`
+### 2. Create `appsettings.json`
 
-Het project bevat bewust **geen kant-en-klare `appsettings.json`**.
+The project intentionally does **not** include a ready-to-use `appsettings.json` file.
 
-Gebruik `appsettings.example.json` als uitgangspunt en hernoem of kopieer dit bestand naar:
+Use `appsettings.example.json` as a template and copy or rename it to:
 
 ```text
 appsettings.json
 ```
 
-In Windows Verkenner of Visual Studio kun je het bestand simpelweg kopiëren en de kopie hernoemen.
-
-Via PowerShell kan dat bijvoorbeeld zo:
+Using PowerShell:
 
 ```powershell
 Copy-Item appsettings.example.json appsettings.json
 ```
 
-Of via Command Prompt:
+Or using Command Prompt:
 
 ```cmd
 copy appsettings.example.json appsettings.json
 ```
 
-> `appsettings.json` staat in `.gitignore`. Dit is bewust gedaan zodat lokale instellingen en eventuele credentials niet per ongeluk in Git terechtkomen.
+> `appsettings.json` is listed in `.gitignore`. This is intentional, so local configuration and possible credentials are not accidentally committed to Git.
 
-### 3. Vul de instellingen in
+### 3. Configure the application
 
-Open daarna `appsettings.json` en vul de waarden in die bij jouw omgeving horen:
+Open `appsettings.json` and enter the values for your environment:
 
 ```json
 {
   "OAuth": {
-    "AuthorizationUrl": "https://jouw-auth-url",
-    "TokenUrl": "https://jouw-access-token-url",
-    "ClientId": "jouw-client-id",
+    "AuthorizationUrl": "https://your-authorization-url",
+    "TokenUrl": "https://your-access-token-url",
+    "ClientId": "your-client-id",
     "ClientSecret": "",
-    "Audience": "jouw-audience",
+    "Audience": "your-audience",
     "RedirectUri": "http://127.0.0.1:53682/callback",
     "BrowserTimeoutSeconds": 300
   },
   "Api": {
-    "RequestUrl": "https://jouw-api-url/jouw-endpoint",
+    "RequestUrl": "https://your-api-url/your-endpoint",
     "Method": "GET",
     "JsonBody": null,
     "Headers": {}
@@ -70,68 +70,68 @@ Open daarna `appsettings.json` en vul de waarden in die bij jouw omgeving horen:
 }
 ```
 
-De belangrijkste instellingen zijn:
+The main settings are:
 
-| Instelling | Betekenis |
+| Setting | Description |
 |---|---|
 | `OAuth.AuthorizationUrl` | OAuth authorization endpoint |
-| `OAuth.TokenUrl` | Endpoint waar de authorization code wordt ingewisseld voor een token |
-| `OAuth.ClientId` | Client ID van de OAuth-client |
-| `OAuth.ClientSecret` | Optioneel client secret; leeg laten wanneer niet nodig |
-| `OAuth.Audience` | Waarde voor de extra `audience` parameter in de authorization request |
-| `OAuth.RedirectUri` | Lokale callback-URL voor de browser-login |
-| `Api.RequestUrl` | Volledige URL van de API-call |
-| `Api.Method` | HTTP-methode, bijvoorbeeld `GET`, `POST`, `PUT`, `PATCH` of `DELETE` |
-| `Api.JsonBody` | Optionele JSON-body voor requests zoals POST of PUT |
-| `Api.Headers` | Optionele extra HTTP-headers |
+| `OAuth.TokenUrl` | Endpoint used to exchange the authorization code for an access token |
+| `OAuth.ClientId` | Client ID of the OAuth client |
+| `OAuth.ClientSecret` | Optional client secret; leave empty when it is not required |
+| `OAuth.Audience` | Value for the additional `audience` parameter in the authorization request |
+| `OAuth.RedirectUri` | Local callback URL used during browser authentication |
+| `Api.RequestUrl` | Full URL of the API request |
+| `Api.Method` | HTTP method, such as `GET`, `POST`, `PUT`, `PATCH`, or `DELETE` |
+| `Api.JsonBody` | Optional JSON body for requests such as POST or PUT |
+| `Api.Headers` | Optional additional HTTP headers |
 
 ## Redirect URI
 
-Standaard gebruikt het project:
+By default, the project uses:
 
 ```text
 http://127.0.0.1:53682/callback
 ```
 
-Deze URL moet als toegestane **Redirect URI / Callback URL** geregistreerd zijn bij de OAuth-client. Als dat niet zo is, kan de authorization server de browser-login weigeren.
+This URL must be registered as an allowed **Redirect URI / Callback URL** for the OAuth client. Otherwise, the authorization server may reject the browser login.
 
-Je kunt de URL en poort aanpassen via `OAuth.RedirectUri`, maar zorg er dan voor dat exact dezelfde waarde ook bij de OAuth-client is toegestaan.
+You can change the URL and port through `OAuth.RedirectUri`, but the exact same value must also be allowed by the OAuth client configuration.
 
-## Applicatie starten
+## Run the application
 
-Ga in een terminal naar de projectmap en voer uit:
+Open a terminal in the project directory and run:
 
 ```powershell
 dotnet run
 ```
 
-De applicatie doet daarna automatisch het volgende:
+The application then automatically performs the following steps:
 
-1. Leest en valideert `appsettings.json`.
-2. Genereert een PKCE `code_verifier`.
-3. Maakt met SHA-256 de bijbehorende `code_challenge`.
-4. Start een lokale callback-listener.
-5. Opent de OAuth Authorization URL in de standaardbrowser.
-6. Laat je inloggen en toestemming geven via de browser.
-7. Ontvangt de authorization code via de lokale callback.
-8. Wisselt de code in voor een access token.
-9. Voert de ingestelde API-request uit met `Authorization: Bearer <token>`.
-10. Toont de HTTP-status en response in de console.
+1. Reads and validates `appsettings.json`.
+2. Generates a PKCE `code_verifier`.
+3. Creates the corresponding SHA-256 `code_challenge`.
+4. Starts a local callback listener.
+5. Opens the OAuth Authorization URL in the default browser.
+6. Lets the user authenticate and authorize through the browser.
+7. Receives the authorization code through the local callback.
+8. Exchanges the code for an access token.
+9. Sends the configured API request with `Authorization: Bearer <token>`.
+10. Displays the HTTP status and response in the console.
 
-## OAuth-instellingen
+## OAuth configuration
 
-Dit voorbeeld volgt de gebruikte Postman-configuratie:
+This example follows the Postman configuration used for the API:
 
 - OAuth 2.0
 - Grant type: **Authorization Code With PKCE**
-- Browser authorization: **aan**
+- Browser authorization: **enabled**
 - PKCE code challenge method: **SHA-256 / S256**
-- Geen scope
-- Geen state
-- Client credentials worden bij de token request in de body verstuurd
-- Extra authorization parameter: `audience`
+- No scope
+- No state
+- Client credentials are sent in the token request body
+- Additional authorization parameter: `audience`
 
-De authorization request bevat onder andere:
+The authorization request contains, among other values:
 
 ```text
 response_type=code
@@ -142,7 +142,7 @@ code_challenge_method=S256
 audience=...
 ```
 
-De token request wordt als `application/x-www-form-urlencoded` verzonden en bevat onder andere:
+The token request is sent as `application/x-www-form-urlencoded` and contains, among other values:
 
 ```text
 grant_type=authorization_code
@@ -152,33 +152,33 @@ client_id=...
 code_verifier=...
 ```
 
-Wanneer `OAuth.ClientSecret` is ingevuld, wordt ook `client_secret` in de body meegestuurd.
+If `OAuth.ClientSecret` is configured, `client_secret` is also included in the request body.
 
-## API-request aanpassen
+## Configure the API request
 
-Voor een GET-request:
+For a GET request:
 
 ```json
 "Api": {
-  "RequestUrl": "https://jouw-api-url/jouw-endpoint",
+  "RequestUrl": "https://your-api-url/your-endpoint",
   "Method": "GET",
   "JsonBody": null,
   "Headers": {}
 }
 ```
 
-Voor bijvoorbeeld een POST-request:
+For example, for a POST request:
 
 ```json
 "Api": {
-  "RequestUrl": "https://jouw-api-url/jouw-endpoint",
+  "RequestUrl": "https://your-api-url/your-endpoint",
   "Method": "POST",
   "JsonBody": "{\"name\":\"Example\"}",
   "Headers": {}
 }
 ```
 
-Extra headers kunnen als volgt worden toegevoegd:
+Additional headers can be configured as follows:
 
 ```json
 "Headers": {
@@ -186,20 +186,20 @@ Extra headers kunnen als volgt worden toegevoegd:
 }
 ```
 
-Het Bearer access token hoef je niet zelf als header toe te voegen. Dat doet de applicatie automatisch.
+You do not need to add the Bearer access token manually. The application adds the `Authorization` header automatically.
 
 ## Logging
 
-De applicatie logt de belangrijkste stappen in de console en gebruikt kleuren om de uitvoer snel leesbaar te maken:
+The application logs the important steps to the console and uses colors to make the output easier to scan:
 
-- **Wit — INFO:** normale informatie en voortgang
-- **Groen — OK:** succesvolle acties
-- **Geel — WARN:** waarschuwingen en onverwachte/niet-succesvolle HTTP-responses
-- **Rood — ERROR / EXCEPTION:** fouten en exceptions
+- **White — INFO:** normal information and progress
+- **Green — OK:** successful operations
+- **Yellow — WARN:** warnings and unexpected or unsuccessful HTTP responses
+- **Red — ERROR / EXCEPTION:** errors and exceptions
 
-Elke logregel bevat een timestamp en logniveau.
+Each log entry contains a timestamp and log level.
 
-Gevoelige OAuth-waarden worden bewust niet in de logs geschreven. Dit geldt onder andere voor:
+Sensitive OAuth values are deliberately excluded from the logs, including:
 
 - access tokens
 - authorization codes
@@ -208,7 +208,7 @@ Gevoelige OAuth-waarden worden bewust niet in de logs geschreven. Dit geldt onde
 
 ## Environment variables
 
-De belangrijkste instellingen uit `appsettings.json` kunnen ook via environment variables worden overschreven:
+The main settings in `appsettings.json` can also be overridden through environment variables:
 
 ```text
 QUADRO_OAUTH_AUTH_URL
@@ -222,54 +222,54 @@ QUADRO_API_METHOD
 QUADRO_API_BODY
 ```
 
-Dit is vooral handig wanneer je gevoelige waarden niet in `appsettings.json` wilt bewaren.
+This is especially useful when you do not want to store sensitive values directly in `appsettings.json`.
 
-## Projectstructuur
+## Project structure
 
-- `Program.cs` — start de OAuth-flow en voert daarna de API-call uit
-- `PkceOAuthClient.cs` — PKCE, browser-login, callback en token exchange
-- `QuadroApiClient.cs` — bouwt en verstuurt de API-request
-- `AppSettings.cs` — leest en valideert de configuratie
-- `ConsoleLogger.cs` — centrale consolelogging met kleurcodering
-- `appsettings.example.json` — voorbeeldconfiguratie; eerst kopiëren/hernoemen
-- `.gitignore` — voorkomt onder andere dat `appsettings.json` wordt gecommit
+- `Program.cs` — starts the OAuth flow and then performs the API request
+- `PkceOAuthClient.cs` — handles PKCE, browser authentication, callback handling, and token exchange
+- `QuadroApiClient.cs` — builds and sends the API request
+- `AppSettings.cs` — reads and validates the configuration
+- `ConsoleLogger.cs` — centralized color-coded console logging
+- `appsettings.example.json` — example configuration; copy or rename this file first
+- `.gitignore` — prevents files such as `appsettings.json` from being committed
 
-## Veelvoorkomende problemen
+## Troubleshooting
 
 ### `Configuration file 'appsettings.json' was not found`
 
-`appsettings.example.json` is nog niet gekopieerd of hernoemd.
+`appsettings.example.json` has not been copied or renamed yet.
 
-Maak in de projectmap een bestand met exact deze naam:
+Create a file in the project directory with exactly this name:
 
 ```text
 appsettings.json
 ```
 
-### De browser meldt dat de redirect URI niet geldig is
+### The browser reports an invalid redirect URI
 
-Controleer of de waarde van `OAuth.RedirectUri` exact overeenkomt met een toegestane redirect URI van de OAuth-client.
+Check that the value of `OAuth.RedirectUri` exactly matches one of the allowed redirect URIs configured for the OAuth client.
 
-### De browser opent niet
+### The browser does not open
 
-Controleer of er een standaardbrowser is ingesteld. De authorization URL wordt ook in de console gelogd, zodat je deze indien nodig handmatig kunt openen.
+Make sure a default browser is configured. The authorization URL is also written to the console, so you can open it manually if necessary.
 
-### HTTP 401 of 403 bij de API-call
+### HTTP 401 or 403 from the API
 
-Controleer onder andere:
+Check the following values and permissions:
 
 - `ClientId`
 - `Audience`
-- de gebruikte OAuth-client
-- de API URL
-- of de ingelogde gebruiker toegang heeft tot het gevraagde endpoint
+- the OAuth client being used
+- the API URL
+- whether the authenticated user has access to the requested endpoint
 
-### Andere HTTP-fout
+### Other HTTP errors
 
-De applicatie toont de HTTP-status en, indien beschikbaar, de response body. Die informatie is meestal het beste uitgangspunt voor verdere diagnose.
+The application displays the HTTP status and, when available, the response body. This information is usually the best starting point for further troubleshooting.
 
 ## Security
 
-Commit `appsettings.json` niet wanneer daar omgevingsspecifieke of gevoelige waarden in staan. Het bestand staat daarom standaard in `.gitignore`.
+Do not commit `appsettings.json` when it contains environment-specific or sensitive values. The file is therefore included in `.gitignore` by default.
 
-Voor lokale ontwikkeling kun je gevoelige waarden eventueel via environment variables instellen in plaats van ze rechtstreeks in het configuratiebestand te plaatsen.
+For local development, sensitive values can also be supplied through environment variables instead of storing them directly in the configuration file.
